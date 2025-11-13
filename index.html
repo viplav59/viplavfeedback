@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Feedback Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #result {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Faculty Feedback Form</h2>
+    <form id="feedbackForm">
+      <label for="facultyId">Faculty ID:</label>
+      <input type="text" id="facultyId" required>
+
+      <label for="rating">Rating (1–5):</label>
+      <select id="rating" required>
+        <option value="">Select</option>
+        <option value="1">1 - Poor</option>
+        <option value="2">2 - Fair</option>
+        <option value="3">3 - Good</option>
+        <option value="4">4 - Very Good</option>
+        <option value="5">5 - Excellent</option>
+      </select>
+
+      <label for="category">Category:</label>
+      <input type="text" id="category" placeholder="e.g. Teaching, Communication">
+
+      <label for="comments">Comments:</label>
+      <textarea id="comments" rows="3" placeholder="Write your feedback here..."></textarea>
+
+      <button type="submit">Submit Feedback</button>
+    </form>
+
+    <p id="result"></p>
+  </div>
+
+  <script>
+    document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      document.getElementById("result").innerText = "Submitting...";
+
+      const data = {
+        facultyId: document.getElementById("facultyId").value,
+        rating: parseInt(document.getElementById("rating").value),
+        category: document.getElementById("category").value,
+        comments: document.getElementById("comments").value
+      };
+
+      try {
+        const response = await fetch("https://YOUR_FUNCTION_URL.azurewebsites.net/api/submitFeedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          document.getElementById("result").style.color = "green";
+          document.getElementById("result").innerText = "✅ Thank you! Your feedback has been submitted.";
+          document.getElementById("feedbackForm").reset();
+        } else {
+          const errText = await response.text();
+          document.getElementById("result").style.color = "red";
+          document.getElementById("result").innerText = "❌ Error: " + errText;
+        }
+      } catch (err) {
+        document.getElementById("result").style.color = "red";
+        document.getElementById("result").innerText = "⚠️ Network or server error!";
+      }
+    });
+  </script>
+
+</body>
+</html>
